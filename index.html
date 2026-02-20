@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>测测你的适合城市</title>
+<style>
+:root {
+  --bg: #f4f6f4;
+  --card: #ffffff;
+  --accent: #2e8b57; /* SeaGreen */
+  --accent-2: #3cb371; /* MediumSeaGreen */
+  --text: #2c3e50;
+  --muted: #606266;
+  --good: #27ae60;
+  --warn: #f39c12;
+  --bad: #e74c3c;
+  --border: #e0e6e0;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(135deg, #f4f6f4 0%, #e8f5e9 100%);
+  color: var(--text);
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.title {
+  font-size: 28px;
+  line-height: 1.2;
+  color: #1a1a1a;
+  font-weight: 800;
+}
+.subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.pill {
+  background: rgba(46, 139, 87, 0.1);
+  border: 1px solid rgba(46, 139, 87, 0.2);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.input, .select {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f9fbf9;
+  color: var(--text);
+  outline: none;
+  transition: all 0.2s;
+}
+.input:focus, .select:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+}
+.checkboxes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f9fbf9;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.check:hover {
+  border-color: var(--accent);
+}
+.check input { accent-color: var(--accent); }
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+.btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+  transition: transform 0.1s;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+.tab {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.tab:hover {
+  background: rgba(0,0,0,0.03);
+  color: var(--text);
+}
+.tab.active {
+  background: rgba(46, 139, 87, 0.1);
+  color: var(--accent);
+  font-weight: 600;
+}
+.city-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.city-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+.city-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(46, 139, 87, 0.08);
+}
+.city-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.city-name { 
+  font-size: 18px; 
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.score {
+  font-weight: 700;
+  color: var(--good);
+  font-size: 16px;
+}
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.tag {
+  font-size: 12px;
+  color: var(--accent);
+  border: 1px solid rgba(46, 139, 87, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(46, 139, 87, 0.05);
+}
+.reason {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.footer {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+}
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+  .city-list { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="title">基于紫微斗数与子平法的国内城市推荐</div>
+      <div class="subtitle">输入出生时间，结合五行、气候与产业资源，给出工作、生活、学业的城市建议</div>
+    </div>
+    <div class="pill">紫微斗数 × 子平法 × 城市数据</div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="form-row">
+        <div>
+          <div class="label">姓名</div>
+          <input class="input" id="name" placeholder="可选">
+        </div>
+        <div>
+          <div class="label">性别</div>
+          <select class="select" id="gender">
+            <option value="未选">未选</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <div class="label">出生日期时间</div>
+          <input class="input" id="birth" type="datetime-local">
+        </div>
+        <div>
+          <div class="label">出生地</div>
+          <div style="display:flex;gap:8px;">
+            <select id="province" class="select" style="flex:1"><option value="">省/直辖市</option></select>
+            <select id="city" class="select" style="flex:1"><option value="">市</option></select>
+            <select id="district" class="select" style="flex:1"><option value="">区/县</option></select>
+          </div>
+        </div>
+      </div>
+      <div id="solarTimeInfo" style="font-size:12px;color:var(--accent);margin-top:-8px;margin-bottom:14px;display:none;background:rgba(46,139,87,0.05);padding:8px;border-radius:6px;"></div>
+      <div class="label">偏好</div>
+      <div class="checkboxes" id="pref">
+        <label class="check"><input type="checkbox" value="工作">工作</label>
+        <label class="check"><input type="checkbox" value="生活">生活</label>
+        <label class="check"><input type="checkbox" value="学业">学业</label>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn" id="run">生成推荐</button>
+        <div class="muted" id="hint">数据本地处理，支持离线使用</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="results-header">
+        <div class="pill" id="elementPill">五行倾向：未计算</div>
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div class="city-list" id="list"></div>
+    </div>
+  </div>
+  <div class="footer">本页为参考建议，倾向基于简化推算与公开城市数据</div>
+</div>
+<script src="city_data.js"></script>
+<script>
+const cityLongitudes = {
+  "北京市":116.40,"上海市":121.47,"天津市":117.20,"重庆市":106.55,
+  "黑龙江省":126.63,"吉林省":125.32,"辽宁省":123.43,"内蒙古自治区":111.65,
+  "河北省":114.48,"山西省":112.53,"陕西省":108.95,"山东省":117.00,
+  "新疆维吾尔自治区":87.68,"西藏自治区":91.11,"青海省":101.74,"甘肃省":103.73,
+  "宁夏回族自治区":106.27,"河南省":113.65,"江苏省":118.78,"湖北省":114.31,
+  "浙江省":120.19,"安徽省":117.27,"福建省":119.30,"江西省":115.89,
+  "湖南省":113.00,"贵州省":106.71,"四川省":104.06,"云南省":102.73,
+  "广东省":113.23,"广西壮族自治区":108.33,"海南省":110.35,"香港特别行政区":114.17,
+  "澳门特别行政区":113.54,"台湾省":121.50,
+  "北京":116.40,"上海":121.47,"天津":117.20,"重庆":106.55,
+  "哈尔滨":126.63,"长春":125.32,"沈阳":123.43,"呼和浩特":111.65,
+  "石家庄":114.48,"太原":112.53,"西安":108.95,"济南":117.00,
+  "乌鲁木齐":87.68,"拉萨":91.11,"西宁":101.74,"兰州":103.73,
+  "银川":106.27,"郑州":113.65,"南京":118.78,"武汉":114.31,
+  "杭州":120.19,"合肥":117.27,"福州":119.30,"南昌":115.89,
+  "长沙":113.00,"贵阳":106.71,"成都":104.06,"昆明":102.73,
+  "广州":113.23,"南宁":108.33,"海口":110.35,"香港":114.17,
+  "澳门":113.54,"台北":121.50,"苏州":120.62,"无锡":120.29,
+  "常州":119.95,"南通":120.86,"徐州":117.18,"温州":120.65,
+  "宁波":121.56,"绍兴":120.58,"嘉兴":120.76,"金华":119.64,
+  "泉州":118.58,"厦门":118.10,"漳州":117.66,"青岛":120.33,
+  "烟台":121.39,"潍坊":119.10,"淄博":118.04,"洛阳":112.44,
+  "开封":114.35,"大连":121.62,"鞍山":122.99,"抚顺":123.97,
+  "深圳":114.07,"珠海":113.52,"佛山":113.11,"东莞":113.76,
+  "中山":113.38,"惠州":114.40,"汕头":116.63,"柳州":109.4,
+  "桂林":110.28,"绵阳":104.73,"大理":100.24,"丽江":100.23,
+  "西双版纳":100.80,"三亚":109.51
+};
+
+
+
+// 省市区联动逻辑
+const pSelect = document.getElementById("province");
+const cSelect = document.getElementById("city");
+const dSelect = document.getElementById("district");
+
+function initSelectors() {
+  if (!typeof cityData === 'undefined') return;
+  pSelect.innerHTML = '<option value="">省/直辖市</option>';
+  cityData.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.name;
+    opt.textContent = p.name;
+    pSelect.appendChild(opt);
+  });
+}
+
+pSelect.onchange = function() {
+  const pName = this.value;
+  cSelect.innerHTML = '<option value="">市</option>';
+  dSelect.innerHTML = '<option value="">区/县</option>';
+  
+  if (!pName) return;
+  
+  const pData = cityData.find(item => item.name === pName);
+  if (pData && pData.sub) {
+    pData.sub.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.name;
+      opt.textContent = c.name;
+      cSelect.appendChild(opt);
+    });
+  }
+};
+
+cSelect.onchange = function() {
+  const pName = pSelect.value;
+  const cName = this.value;
+  dSelect.innerHTML = '<option value="">区/县</option>';
+  
+  if (!pName || !cName) return;
+  
+  const pData = cityData.find(item => item.name === pName);
+  if (pData) {
+    const cData = pData.sub.find(item => item.name === cName);
+    if (cData && cData.sub) {
+      cData.sub.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        dSelect.appendChild(opt);
+      });
+    }
+  }
+};
+
+// 页面加载后初始化
+if (typeof cityData !== 'undefined') {
+  initSelectors();
+}
+
+// 均时差计算（简化版，误差约1分钟内）
+function getEquationOfTime(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+  const B = 2 * Math.PI * (dayOfYear - 81) / 365;
+  return 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+}
+
+function getTrueSolarTime(date, longitude) {
+  // 经度差（每度4分钟）
+  const longDiff = (longitude - 120) * 4;
+  // 均时差
+  const eot = getEquationOfTime(date);
+  // 总偏差（分钟）
+  const totalOffset = longDiff + eot;
+  // 真太阳时
+  const trueTime = new Date(date.getTime() + totalOffset * 60 * 1000);
+  return { trueTime, offset: totalOffset, longDiff, eot };
+}
+
+const stems = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const branches = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const stemToElement = { "甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水" };
+const branchToElement = { "子":"水","丑":"土","寅":"木","卯":"木","辰":"土","巳":"火","午":"火","未":"土","申":"金","酉":"金","戌":"土","亥":"水" };
+// 藏干表 (参考子平真诠)
+const branchHidden = {
+  "子":[{stem:"癸",weight:1.0}], 
+  "丑":[{stem:"己",weight:0.6},{stem:"癸",weight:0.3},{stem:"辛",weight:0.1}], 
+  "寅":[{stem:"甲",weight:0.6},{stem:"丙",weight:0.3},{stem:"戊",weight:0.1}], 
+  "卯":[{stem:"乙",weight:1.0}], 
+  "辰":[{stem:"戊",weight:0.6},{stem:"乙",weight:0.3},{stem:"癸",weight:0.1}], 
+  "巳":[{stem:"丙",weight:0.6},{stem:"庚",weight:0.3},{stem:"戊",weight:0.1}], 
+  "午":[{stem:"丁",weight:0.7},{stem:"己",weight:0.3}], 
+  "未":[{stem:"己",weight:0.6},{stem:"丁",weight:0.3},{stem:"乙",weight:0.1}], 
+  "申":[{stem:"庚",weight:0.6},{stem:"壬",weight:0.3},{stem:"戊",weight:0.1}], 
+  "酉":[{stem:"辛",weight:1.0}], 
+  "戌":[{stem:"戊",weight:0.6},{stem:"辛",weight:0.3},{stem:"丁",weight:0.1}], 
+  "亥":[{stem:"壬",weight:0.7},{stem:"甲",weight:0.3}]
+};
+
+// 节气表 (简化版，基于2000年数据+周期推算)
+function getSolarTermDate(year, n) {
+  const termInfo = [
+    0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693,
+    263343, 285989, 308563, 331033, 353350, 375494, 397447, 419210, 440795, 462224, 483532, 504758
+  ];
+  return new Date((31556925974.7 * (year - 1900) + termInfo[n] * 60000) + Date.UTC(1900, 0, 6, 2, 5));
+}
+
+function getGanZhi(dt) {
+  const y = dt.getFullYear();
+  const m = dt.getMonth() + 1;
+  const d = dt.getDate();
+  const h = dt.getHours();
+  
+  // 1. 年柱 (以立春为界)
+  const liChun = getSolarTermDate(y, 2);
+  let yearGanZhiYear = y;
+  if (dt < liChun) {
+    yearGanZhiYear = y - 1;
+  }
+  const yearStemIndex = (yearGanZhiYear - 4) % 10; 
+  const yearBranchIndex = (yearGanZhiYear - 4) % 12;
+  const yearGan = stems[(yearStemIndex + 10) % 10];
+  const yearZhi = branches[(yearBranchIndex + 12) % 12];
+  
+  // 2. 月柱 (以节气为界)
+  let monthIndex = -1;
+  if (dt < liChun) {
+    monthIndex = 11; // 丑月
+  } else {
+    for (let n = 2; n <= 22; n += 2) {
+      const currTerm = getSolarTermDate(y, n);
+      const nextTerm = (n === 22) ? getSolarTermDate(y + 1, 0) : getSolarTermDate(y, n + 2);
+      if (dt >= currTerm && dt < nextTerm) {
+         monthIndex = (n/2 + 1) % 12;
+         break;
+      }
+    }
+    if (monthIndex === -1 && dt >= getSolarTermDate(y, 22)) monthIndex = 0; // 子月
+  }
+  const monthStemBase = ((yearStemIndex % 5) + 1) * 2;
+  const monthOffset = (monthIndex - 2 + 12) % 12;
+  const monthStem = stems[(monthStemBase + monthOffset) % 10];
+  const monthZhi = branches[monthIndex];
+  
+  // 3. 日柱 (1900-01-01 UTC是甲戌日)
+  const baseDate = Date.UTC(1900, 0, 1);
+  const currentUTC = Date.UTC(y, m-1, d);
+  const dayDiff = Math.floor((currentUTC - baseDate) / 86400000);
+  const dayGanZhiIndex = (dayDiff + 10) % 60;
+  
+  // 夜子时处理：23:00后算第二天
+  let finalDayIndex = dayGanZhiIndex;
+  if (h >= 23) {
+    finalDayIndex = (finalDayIndex + 1) % 60;
+  }
+  
+  const dayStemIndex = (finalDayIndex % 10 + 10) % 10;
+  const dayBranchIndex = (finalDayIndex % 12 + 12) % 12;
+  const dayGan = stems[dayStemIndex];
+  const dayZhi = branches[dayBranchIndex];
+  
+  // 4. 时柱
+  const hourBranchIndex = (Math.floor((h + 1) / 2)) % 12;
+  const hourZhi = branches[hourBranchIndex];
+  
+  // 日上起时
+  const hourStemBase = (dayStemIndex % 5) * 2;
+  const hourStem = stems[(hourStemBase + hourBranchIndex) % 10];
+  
+  return {
+    year: yearGan + yearZhi,
+    month: monthStem + monthZhi,
+    day: dayGan + dayZhi,
+    hour: hourStem + hourZhi,
+    yGan: yearGan, yZhi: yearZhi,
+    mGan: monthStem, mZhi: monthZhi,
+    dGan: dayGan, dZhi: dayZhi,
+    hGan: hourStem, hZhi: hourZhi
+  };
+}
+
+const genCycle = { "木":"火", "火":"土", "土":"金", "金":"水", "水":"木" };
+const restrainCycle = { "木":"土", "土":"水", "水":"火", "火":"金", "金":"木" };
+const regions = ["华北","华东","华南","西南","西北","东北","华中"];
+const cities = [
+  { name:"北京", province:"北京", region:"华北", element:"金", climate:"干燥", industry:["政务","科技","金融"], edu:"高", pace:"快" },
+  { name:"上海", province:"上海", region:"华东", element:"水", climate:"湿润", industry:["金融","贸易","科技"], edu:"高", pace:"快" },
+  { name:"深圳", province:"广东", region:"华南", element:"火", climate:"温暖", industry:["科技","电子","金融"], edu:"高", pace:"快" },
+  { name:"广州", province:"广东", region:"华南", element:"木", climate:"温暖", industry:["贸易","制造","文化"], edu:"高", pace:"快" },
+  { name:"杭州", province:"浙江", region:"华东", element:"木", climate:"湿润", industry:["互联网","数字经济"], edu:"高", pace:"中" },
+  { name:"南京", province:"江苏", region:"华东", element:"水", climate:"湿润", industry:["制造","科研","服务"], edu:"高", pace:"中" },
+  { name:"苏州", province:"江苏", region:"华东", element:"水", climate:"湿润", industry:["制造","外贸","科技"], edu:"中", pace:"中" },
+  { name:"成都", province:"四川", region:"西南", element:"土", climate:"湿润", industry:["科创","文创","服务"], edu:"高", pace:"中" },
+  { name:"重庆", province:"重庆", region:"西南", element:"火", climate:"湿润", industry:["制造","汽车","科创"], edu:"高", pace:"中" },
+  { name:"武汉", province:"湖北", region:"华中", element:"水", climate:"湿润", industry:["科研","制造","服务"], edu:"高", pace:"中" },
+  { name:"西安", province:"陕西", region:"西北", element:"土", climate:"干燥", industry:["科研","航天","制造"], edu:"高", pace:"中" },
+  { name:"天津", province:"天津", region:"华北", element:"金", climate:"干燥", industry:["制造","航运","服务"], edu:"中", pace:"中" },
+  { name:"青岛", province:"山东", region:"华东", element:"水", climate:"湿润", industry:["海洋","制造","旅游"], edu:"中", pace:"中" },
+  { name:"厦门", province:"福建", region:"华东", element:"火", climate:"温暖", industry:["贸易","旅游","电子"], edu:"中", pace:"中" },
+  { name:"宁波", province:"浙江", region:"华东", element:"水", climate:"湿润", industry:["港口","制造","贸易"], edu:"中", pace:"中" },
+  { name:"无锡", province:"江苏", region:"华东", element:"金", climate:"湿润", industry:["制造","物联网"], edu:"中", pace:"中" },
+  { name:"郑州", province:"河南", region:"华中", element:"土", climate:"干燥", industry:["物流","制造","服务"], edu:"中", pace:"中" },
+  { name:"长沙", province:"湖南", region:"华中", element:"火", climate:"温暖", industry:["文娱","制造","科研"], edu:"中", pace:"中" },
+  { name:"合肥", province:"安徽", region:"华东", element:"土", climate:"湿润", industry:["科研","芯片","制造"], edu:"高", pace:"中" },
+  { name:"大连", province:"辽宁", region:"东北", element:"金", climate:"寒冷", industry:["航运","制造","服务"], edu:"中", pace:"中" },
+  { name:"昆明", province:"云南", region:"西南", element:"木", climate:"温和", industry:["旅游","服务","农业"], edu:"中", pace:"慢" },
+  { name:"福州", province:"福建", region:"华东", element:"水", climate:"湿润", industry:["制造","贸易","服务"], edu:"中", pace:"中" },
+  { name:"济南", province:"山东", region:"华东", element:"土", climate:"干燥", industry:["政务","服务","制造"], edu:"中", pace:"中" },
+  { name:"石家庄", province:"河北", region:"华北", element:"土", climate:"干燥", industry:["制造","物流","政务"], edu:"低", pace:"中" },
+  { name:"南宁", province:"广西", region:"华南", element:"木", climate:"温暖", industry:["贸易","物流","文旅"], edu:"中", pace:"中" },
+  { name:"贵阳", province:"贵州", region:"西南", element:"木", climate:"湿润", industry:["大数据","文旅"], edu:"中", pace:"中" },
+  { name:"哈尔滨", province:"黑龙江", region:"东北", element:"水", climate:"寒冷", industry:["制造","科研","旅游"], edu:"中", pace:"中" },
+  { name:"长春", province:"吉林", region:"东北", element:"金", climate:"寒冷", industry:["汽车","制造","科研"], edu:"中", pace:"中" }
+];
+const prefOrder = ["工作","生活","学业"];
+function climatePrefByElement(e) {
+  if (e==="水") return ["湿润","沿海","温暖","寒冷"];
+  if (e==="火") return ["温暖","阳光","干燥","温和"];
+  if (e==="木") return ["温和","湿润","绿化","温暖"];
+  if (e==="金") return ["干燥","清爽","寒冷","湿润"];
+  return ["稳定","温和","干燥","湿润"];
+}
+function scoreCity(user, city, category, gender) {
+  let s = 0;
+  const e = user.element; // 喜用神
+  
+  // 1. 五行评分 (基于喜用神)
+  if (city.element === e) s += 30; // 同气相求
+  if (genCycle[city.element] === e) s += 25; // 生我（生喜用神）者吉
+  if (genCycle[e] === city.element) s -= 5; // 泄喜用神，略减分
+  if (restrainCycle[city.element] === e) s -= 20; // 克喜用神，大凶
+  if (restrainCycle[e] === city.element) s -= 10; // 耗喜用神，小凶
+  
+  const cp = climatePrefByElement(e);
+  if (cp.includes(city.climate)) s += 10;
+  
+  if (category === "生活") {
+    if (city.pace === "中") s += 6;
+    if (city.pace === "慢") s += 10;
+    if (city.region === "华东" || city.region === "华南") s += 4;
+  }
+  if (category === "工作") {
+    const econ = ["北京","上海","深圳","广州","杭州","南京","苏州","成都","重庆","武汉","天津","西安","厦门","青岛","合肥","郑州","长沙","宁波","无锡"];
+    if (econ.includes(city.name)) s += 12;
+    if (city.industry.includes("科技")) s += e==="火"||e==="木" ? 8 : 4;
+    if (city.industry.includes("金融")) s += e==="金"||e==="水" ? 8 : 4;
+    if (city.industry.includes("制造")) s += e==="金"||e==="土" ? 8 : 4;
+  }
+  if (category === "学业") {
+    if (city.edu === "高") s += 18;
+    if (city.edu === "中") s += 8;
+    const strongEdu = ["北京","上海","南京","武汉","西安","杭州","成都","重庆","广州","天津","长沙","合肥","郑州","哈尔滨","长春"];
+    if (strongEdu.includes(city.name)) s += 8;
+  }
+  
+  // 2. 调候/性别微调 (参考)
+  // 杭州/苏州/厦门/昆明 适合女命 (通常认为是宜居、柔和)
+  if (gender === "女" && (city.name==="杭州"||city.name==="苏州"||city.name==="厦门"||city.name==="昆明")) s += 5;
+  // 深圳/重庆/西安/武汉 适合男命 (拼搏、阳刚)
+  if (gender === "男" && (city.name==="深圳"||city.name==="重庆"||city.name==="西安"||city.name==="武汉")) s += 5;
+  
+  // 3. 桃花/贵人位 (简化：以年支或日支查)
+  // 申子辰见酉(金)为桃花... 这里用简单的生肖对应方位或城市属性不太准，暂略
+  // 简单加分：如果是由于 user.branch (时支) 决定的，可以参考
+  
+  return s;
+}
+
+function reasons(user, city, category) {
+  const tags = [];
+  const e = user.element;
+  if (city.element === e) tags.push("五行契合");
+  if (genCycle[city.element] === e) tags.push("生旺喜神");
+  
+  const cp = climatePrefByElement(e);
+  if (cp.includes(city.climate)) tags.push("气候适宜");
+  
+  if (category==="工作") {
+    if (city.industry.includes("科技")) tags.push("科创氛围");
+    if (city.industry.includes("金融")) tags.push("金融资源");
+    if (city.industry.includes("制造")) tags.push("制造基础");
+  }
+  if (category==="学业") {
+    if (city.edu==="高") tags.push("高校云集");
+    else tags.push("教育资源");
+  }
+  if (category==="生活") tags.push(city.pace==="慢"?"慢生活":"宜居节奏");
+  return tags;
+}
+
+function elementNameByBirth(dt) {
+  const bazi = getGanZhi(dt);
+  const count = { "金":0,"木":0,"水":0,"火":0,"土":0 };
+  
+  // 天干权重 (基础 1.0)
+  [bazi.yGan, bazi.mGan, bazi.dGan, bazi.hGan].forEach(s => {
+    count[stemToElement[s]] += 1.0;
+  });
+  
+  // 地支藏干权重
+  [bazi.yZhi, bazi.mZhi, bazi.dZhi, bazi.hZhi].forEach(z => {
+    const hiddens = branchHidden[z];
+    hiddens.forEach(h => {
+      count[stemToElement[h.stem]] += h.weight;
+    });
+  });
+  
+  // 月令加权 (月支的力量最强，通常加倍或占40%左右)
+  // 这里简单处理：月支的所有藏干权重再 * 1.5
+  const mHiddens = branchHidden[bazi.mZhi];
+  mHiddens.forEach(h => {
+    count[stemToElement[h.stem]] += h.weight * 1.5;
+  });
+
+  // 日干（日主）
+  const me = stemToElement[bazi.dGan];
+  
+  let best = "土";
+  let max = -1;
+  // 找出最强五行（除了日主自己，还是包括？）
+  // 这里的推荐逻辑是基于“喜用神”的简化版。
+  // 如果日主太强，可能喜克泄耗；如果太弱，喜生扶。
+  // 这是一个复杂判断。
+  // 简化版：缺什么补什么 -> 最弱的五行？
+  // 或者：最强的五行代表性格特质？
+  // 之前的逻辑是：推荐匹配的城市（五行相同或相生）。
+  // 现在的逻辑：
+  // 1. 计算日主强弱。
+  // 同党 (Same + Parent)，异党 (Child + Wealth + Officer)
+  let sameScore = count[me]; // 比劫
+  let parent = genCycle[me] === me ? null : Object.keys(genCycle).find(k=>genCycle[k]===me); // 印枭
+  let parentScore = count[parent];
+  
+  let totalScore = 0;
+  for(let k in count) totalScore += count[k];
+  
+  const selfStrength = sameScore + parentScore;
+  const isStrong = selfStrength > (totalScore * 0.45); // 约45%-50%为界
+  
+  // 喜用神粗略判断：
+  // 强 -> 喜 克(官杀)、泄(食伤)、耗(财)
+  // 弱 -> 喜 生(印枭)、扶(比劫)
+  // 调候（寒暖燥湿）暂略，可根据月令粗调
+  
+  let useful = [];
+  if (isStrong) {
+    // 找异党中最弱的来补？或者最强的顺势？
+    // 平衡法：取异党
+    useful = Object.keys(count).filter(k => k !== me && k !== parent);
+  } else {
+    // 取同党
+    useful = [me, parent];
+  }
+  
+  // 选出得分最高的喜用神作为“推荐五行”
+  // 或者综合分
+  // 这里为了保持兼容性，我们返回“最需要的五行”作为 `element`
+  
+  // 排序 useful 中的五行，按分数低到高（缺者补之）？
+  // 还是按分数高到低（顺势）？
+  // 旺极从旺，弱极从弱。
+  // 普通格局：扶抑。
+  // 假设普通格局。
+  // 强：用克泄耗。优先选分数较“强”的异党（有力的用神）？还是弱的（扶不起）？
+  // 通常取“有力的异党”为用神。
+  // 弱：取“有力的同党”为用神。
+  
+  let maxUseful = -1;
+  let bestUseful = useful[0];
+  useful.forEach(u => {
+    if (count[u] > maxUseful) {
+      maxUseful = count[u];
+      bestUseful = u;
+    }
+  });
+  
+  // 修正：如果某个五行太弱（0），可能补不起来，不如顺势。
+  // 但对于城市推荐，去一个五行气场强的地方补足是合理的。
+  // 所以我们选 useful 中分数最低的？不，选分数最高的（得力用神）作为方向。
+  
+  bazi.text = `${bazi.year}年 ${bazi.month}月 ${bazi.day}日 ${bazi.hour}时`;
+  bazi.element = bestUseful; // 这里返回喜用神
+  bazi.count = count;
+  bazi.stem = bazi.yGan;
+  bazi.branch = bazi.hZhi;
+  bazi.me = me; // 日主五行
+  bazi.isStrong = isStrong;
+  return bazi;
+}
+
+function run() {
+  const name = document.getElementById("name").value.trim();
+  const gender = document.getElementById("gender").value;
+  const birthRaw = document.getElementById("birth").value;
+  const pVal = document.getElementById("province").value;
+  const cVal = document.getElementById("city").value;
+  const dVal = document.getElementById("district").value;
+  const birthPlace = [pVal, cVal, dVal].filter(Boolean).join(" ");
+  
+  const checks = Array.from(document.querySelectorAll("#pref input:checked")).map(x=>x.value);
+  const prefs = checks.length ? checks : ["工作","生活","学业"];
+  if (!birthRaw) {
+    document.getElementById("hint").textContent = "请填写出生日期时间";
+    return;
+  }
+  const dt = new Date(birthRaw.replace("T"," ") + ":00");
+  
+  // 经度匹配
+  let longitude = 120;
+  let foundCity = "默认";
+  
+  function findLong(name) {
+    if (!name) return null;
+    if (cityLongitudes[name]) return cityLongitudes[name];
+    const shortName = name.replace(/(区|县|市|省|壮族自治区|回族自治区|维吾尔自治区|自治区|特别行政区)$/, '');
+    if (cityLongitudes[shortName]) return cityLongitudes[shortName];
+    return null;
+  }
+  
+  const dLong = findLong(dVal);
+  const cLong = findLong(cVal);
+  const pLong = findLong(pVal);
+  
+  if (dLong !== null) {
+      longitude = dLong;
+      foundCity = dVal;
+  } else if (cLong !== null) {
+      longitude = cLong;
+      foundCity = cVal;
+  } else if (pLong !== null) {
+      longitude = pLong;
+      foundCity = pVal;
+  }
+  
+  const solarRes = getTrueSolarTime(dt, longitude);
+  const user = elementNameByBirth(solarRes.trueTime);
+  
+  const info = document.getElementById("solarTimeInfo");
+  info.style.display = "block";
+  const fmt = d => d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+  const off = Math.round(solarRes.offset);
+  const sign = off >= 0 ? "+" : "";
+  
+  // 八字展示 HTML
+  const baziHtml = `
+    <div style="display:flex;justify-content:space-between;margin-top:10px;text-align:center;background:#fff;padding:10px;border-radius:8px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+      <div style="flex:1"><div style="color:var(--muted);font-size:12px;margin-bottom:2px">年柱</div><div style="font-weight:600;font-size:18px">${user.yGan}${user.yZhi}</div></div>
+      <div style="flex:1;border-left:1px solid #eee"><div style="color:var(--muted);font-size:12px;margin-bottom:2px">月柱</div><div style="font-weight:600;font-size:18px">${user.mGan}${user.mZhi}</div></div>
+      <div style="flex:1;border-left:1px solid #eee"><div style="color:var(--muted);font-size:12px;margin-bottom:2px">日柱</div><div style="font-weight:600;font-size:18px;color:var(--accent)">${user.dGan}${user.dZhi}</div></div>
+      <div style="flex:1;border-left:1px solid #eee"><div style="color:var(--muted);font-size:12px;margin-bottom:2px">时柱</div><div style="font-weight:600;font-size:18px">${user.hGan}${user.hZhi}</div></div>
+    </div>
+    <div style="margin-top:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center;background:rgba(46,139,87,0.03);padding:8px 12px;border-radius:6px;">
+       <div>日主：<b style="font-size:15px">${user.me}</b> <span style="color:var(--muted);font-size:12px">(${user.isStrong?'身强':'身弱'})</span></div>
+       <div>喜用神：<b style="color:var(--good);font-size:15px">${user.element}</b></div>
+    </div>
+    <div style="margin-top:6px;font-size:12px;color:var(--muted);display:flex;gap:12px;">
+      <span>五行能量：</span>
+      <span>金 <b style="color:#333">${user.count.金.toFixed(0)}</b></span>
+      <span>木 <b style="color:#333">${user.count.木.toFixed(0)}</b></span>
+      <span>水 <b style="color:#333">${user.count.水.toFixed(0)}</b></span>
+      <span>火 <b style="color:#333">${user.count.火.toFixed(0)}</b></span>
+      <span>土 <b style="color:#333">${user.count.土.toFixed(0)}</b></span>
+    </div>
+  `;
+
+  info.innerHTML = `
+    <div style="margin-bottom:6px;display:flex;justify-content:space-between;font-size:12px;color:#555">
+      <span>地点：${foundCity!=="默认"?foundCity:"未匹配，默认"}(E${longitude}°)</span>
+      <span>真太阳时：${fmt(solarRes.trueTime)} (${sign}${off}分)</span>
+    </div>
+    ${baziHtml}
+  `;
+  
+  document.getElementById("elementPill").textContent = "建议方向：" + user.element + "（喜用神）";
+  localStorage.setItem("astro_user", JSON.stringify({ name, gender, birthRaw, birthPlace, prefs }));
+  renderTabs(prefs, user);
+  renderList(user, prefs[0], gender);
+}
+function renderTabs(prefs, user) {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  prefs.sort((a,b)=>prefOrder.indexOf(a)-prefOrder.indexOf(b));
+  prefs.forEach(p=>{
+    const t = document.createElement("button");
+    t.className = "tab";
+    t.textContent = p;
+    t.onclick = ()=> {
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      const saved = JSON.parse(localStorage.getItem("astro_user")||"{}");
+      renderList(user, p, saved.gender||"未选");
+    };
+    tabs.appendChild(t);
+  });
+  const first = tabs.querySelector(".tab");
+  if (first) first.classList.add("active");
+}
+function renderList(user, pref, gender) {
+  const list = document.getElementById("list");
+  const scored = cities.map(c=>{
+    return { city:c, score: scoreCity(user, c, pref, gender), tags: reasons(user,c,pref) };
+  }).sort((a,b)=>b.score-a.score).slice(0,6);
+  list.innerHTML = "";
+  scored.forEach(item=>{
+    const el = document.createElement("div");
+    el.className = "city-card";
+    const t = document.createElement("div");
+    t.className = "city-title";
+    const name = document.createElement("div");
+    name.className = "city-name";
+    name.textContent = item.city.name + " · " + item.city.province + " · " + item.city.region;
+    const score = document.createElement("div");
+    score.className = "score";
+    score.textContent = Math.round(item.score);
+    t.appendChild(name);
+    t.appendChild(score);
+    const tagBox = document.createElement("div");
+    tagBox.className = "tags";
+    item.tags.forEach(tag=>{
+      const tg = document.createElement("div");
+      tg.className = "tag";
+      tg.textContent = tag;
+      tagBox.appendChild(tg);
+    });
+    const reason = document.createElement("div");
+    reason.className = "reason";
+    reason.textContent = "气候：" + item.city.climate + "；产业：" + item.city.industry.join("、") + "；教育：" + item.city.edu + "；节奏：" + item.city.pace;
+    el.appendChild(t);
+    el.appendChild(tagBox);
+    el.appendChild(reason);
+    list.appendChild(el);
+  });
+}
+document.getElementById("run").addEventListener("click", run);
+window.addEventListener("load", ()=>{
+  if (typeof cityData !== 'undefined') {
+    initSelectors();
+  }
+
+  const saved = JSON.parse(localStorage.getItem("astro_user")||"{}");
+  if (saved.birthRaw) {
+    document.getElementById("name").value = saved.name||"";
+    document.getElementById("gender").value = saved.gender||"未选";
+    document.getElementById("birth").value = saved.birthRaw||"";
+    
+    if (saved.birthPlace) {
+      const parts = saved.birthPlace.split(" ");
+      if (parts.length >= 1) {
+        const pSelect = document.getElementById("province");
+        pSelect.value = parts[0];
+        // 触发change事件以加载下一级
+        pSelect.dispatchEvent(new Event('change'));
+        
+        if (parts.length >= 2) {
+          const cSelect = document.getElementById("city");
+          cSelect.value = parts[1];
+          cSelect.dispatchEvent(new Event('change'));
+          
+          if (parts.length >= 3) {
+            const dSelect = document.getElementById("district");
+            dSelect.value = parts[2];
+          }
+        }
+      }
+    }
+    
+    const prefs = saved.prefs||["工作","生活","学业"];
+    document.querySelectorAll("#pref input").forEach(x=>x.checked = prefs.includes(x.value));
+    run();
+  }
+});
+</script>
+</body>
+</html>
